@@ -1258,6 +1258,53 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 799787ff8ba554471857597961c8998e, type: 3}
+--- !u!1 &2002939185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2002939187}
+  - component: {fileID: 2002939186}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2002939186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2002939185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e4d240c11a946a3b229e1498340657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathSound: {fileID: 8300000, guid: 7dda7c4bddd8343e496972f737324743, type: 3}
+  respawnSound: {fileID: 8300000, guid: 06ab73c2312b940e0ba1af19f8550b8a, type: 3}
+  levelCompleteSound: {fileID: 8300000, guid: a7a20a5d7abe94422bfcfe12cccdf73e, type: 3}
+--- !u!4 &2002939187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2002939185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.36314112, y: 0.22809914, z: 6.716558}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2023279466
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,6 +1441,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6288604125119300390, guid: 9ddb61721466445b28e6e5a6750856fa, type: 3}
+      propertyPath: characterController
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8088749811746460800, guid: 9ddb61721466445b28e6e5a6750856fa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 17.22
@@ -1434,7 +1485,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6288604125119300390, guid: 9ddb61721466445b28e6e5a6750856fa, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -1513,3 +1565,4 @@ SceneRoots:
   - {fileID: 3039207757417892019}
   - {fileID: 370971435}
   - {fileID: 157141644}
+  - {fileID: 2002939187}
