@@ -82,10 +82,10 @@ public class Player : MonoBehaviour
             movementInput.Normalize();
 
         // Apply Movement and Smooth Rotation
-        if (movementVelocity.x != 0 || movementVelocity.z != 0)
+        if (movementInput != Vector3.zero)
         {
-            characterController.Move(movementInput * moveSpeed * Time.deltaTime);
-            modelTrans.rotation = Quaternion.Slerp(modelTrans.rotation, Quaternion.LookRotation(movementVelocity), .18f);
+            characterController.Move(moveSpeed * Time.deltaTime * movementInput);
+            modelTrans.rotation = Quaternion.Slerp(modelTrans.rotation, Quaternion.LookRotation(movementInput), .18f);
         }
     }
 
