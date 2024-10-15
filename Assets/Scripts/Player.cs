@@ -77,10 +77,14 @@ public class Player : MonoBehaviour
         KeyCode[] leftKeys = { KeyCode.A, KeyCode.LeftArrow };
         UpdateVelocity(ref movementVelocity.x, rightKeys, leftKeys);
 
+        Vector3 movementInput = new(movementVelocity.x, 0, movementVelocity.z);
+        if (movementInput.magnitude > 1)
+            movementInput.Normalize();
+
         // Apply Movement and Smooth Rotation
         if (movementVelocity.x != 0 || movementVelocity.z != 0)
         {
-            characterController.Move(movementVelocity * Time.deltaTime);
+            characterController.Move(movementInput * moveSpeed * Time.deltaTime);
             modelTrans.rotation = Quaternion.Slerp(modelTrans.rotation, Quaternion.LookRotation(movementVelocity), .18f);
         }
     }
