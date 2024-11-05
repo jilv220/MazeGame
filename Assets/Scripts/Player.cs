@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -7,6 +9,8 @@ public class Player : MonoBehaviour
     public Transform trans;
     public Transform modelTrans;
     public CharacterController characterController;
+    public GameObject cam;
+    private DashHandler dashHandler;
 
     [Header("Movement")]
     public float moveSpeed = 24;
@@ -29,14 +33,14 @@ public class Player : MonoBehaviour
     }
 
     public float reverseMomentumMultiplier = 2.2f;
-    private Vector3 movementVelocity = Vector3.zero;
+    public Vector3 movementVelocity = Vector3.zero;
 
     [Header("Death and Respawning")]
     public float respawnWaitTime = 2f;
     private bool dead = false;
     private Vector3 spawnPoint;
     private Quaternion spawnRotation;
-
+    private bool isPaused = false;
     private bool isInvincible = false;
 
     void UpdateVelocity(ref float axisVelocity, KeyCode[] positiveKeys, KeyCode[] negativeKeys)
@@ -89,6 +93,18 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Pausing()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isPaused = !isPaused;
+            if (isPaused)
+                Time.timeScale = 0;
+            else
+                Time.timeScale = 1;
+        }
+    }
+
     private void SetEnabled(bool value)
     {
         enabled = value;
@@ -105,7 +121,8 @@ public class Player : MonoBehaviour
 
         movementVelocity = Vector3.zero;
         SetEnabled(false);
-        SoundManager.Instance.PlayDeathSound();
+        dashHandler.dashBeginTime = Mathf.NegativeInfinity;
+        SoundManager.Instance.PlayOneShot("death");
     }
 
     public void Respawn()
@@ -115,7 +132,7 @@ public class Player : MonoBehaviour
         modelTrans.rotation = spawnRotation;
 
         SetEnabled(true);
-        SoundManager.Instance.PlayRespawnSound();
+        SoundManager.Instance.PlayOneShot("respawn");
     }
 
     public void ToggleInvincible()
@@ -128,25 +145,63 @@ public class Player : MonoBehaviour
     {
         spawnPoint = transform.position;
         spawnRotation = modelTrans.rotation;
+        dashHandler = GetComponent<DashHandler>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Movement();
-
-        if (Debug.isDebugBuild)
+        if (!isPaused)
         {
-            if (Input.GetKeyDown(KeyCode.T))
+            Movement();
+            if (dashHandler != null)
             {
-                Die();
+                dashHandler.HandleDash();
             }
 
-            if (Input.GetKeyDown(KeyCode.I))
+            if (Debug.isDebugBuild)
             {
-                ToggleInvincible();
-                Debug.Log($"Player is invisible: {isInvincible}");
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    Die();
+                }
+
+                if (Input.GetKeyDown(KeyCode.I))
+                {
+                    ToggleInvincible();
+                    Debug.Log($"Player is invisible: {isInvincible}");
+                }
             }
         }
+
+        Pausing();
+    }
+
+    void OnGUI()
+    {
+        if (!isPaused) return;
+
+        float boxWidth = Screen.width * .4f;
+        float boxHeight = Screen.height * .4f;
+        GUILayout.BeginArea(new Rect(
+            (Screen.width * .5f) - (boxWidth * .5f),
+            (Screen.height * .5f) - (boxHeight * .5f),
+            boxWidth,
+            boxHeight
+        ));
+
+        if (GUILayout.Button("RESUME GAME", GUILayout.Height(boxHeight * .5f)))
+        {
+            isPaused = false;
+            Time.timeScale = 1;
+        }
+
+        if (GUILayout.Button("RETURN TO MAIN MENU", GUILayout.Height(boxHeight * .5f)))
+        {
+            Time.timeScale = 1;
+            SceneManager.LoadScene(0);
+        }
+
+        GUILayout.EndArea();
     }
 }

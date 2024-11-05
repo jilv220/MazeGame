@@ -41,8 +41,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8088749811746460800}
-  - component: {fileID: 6288604125119300390}
-  - component: {fileID: 1245910120462938323}
+  - component: {fileID: 2403329453065638308}
+  - component: {fileID: 8768405023161399557}
+  - component: {fileID: 4110677600415592298}
+  - component: {fileID: 603188235685780900}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -67,28 +69,28 @@ Transform:
   - {fileID: 4352479990898737329}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6288604125119300390
+--- !u!114 &2403329453065638308
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1883033847345058571}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2862487714415469bae9b6de57a2f2b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trans: {fileID: 8088749811746460800}
   modelTrans: {fileID: 633100337979485994}
-  characterController: {fileID: 1245910120462938323}
-  deathSound: {fileID: 8300000, guid: d3a86e370e8bf447497ce63777816ebc, type: 3}
+  characterController: {fileID: 8768405023161399557}
+  cam: {fileID: 4975544855566748510}
   moveSpeed: 24
   timeToMaxSpeed: 0.26
   timeToLoseMaxSpeed: 0.2
   reverseMomentumMultiplier: 2.2
   respawnWaitTime: 2
---- !u!143 &1245910120462938323
+--- !u!143 &8768405023161399557
 CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,6 +116,33 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 2.5, z: 0}
+--- !u!81 &4110677600415592298
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883033847345058571}
+  m_Enabled: 1
+--- !u!114 &603188235685780900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883033847345058571}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f89cf0952acea4a7c8217c7e217555e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashDistance: 9
+  dashTime: 0.26
+  dashCooldown: 1.8
+  dashImage: {fileID: 0}
+  cooldownOverlay: {fileID: 0}
+  activeColor: {r: 1, g: 1, b: 1, a: 1}
+  dashBeginTime: -Infinity
 --- !u!1 &4975544855566748510
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,14 +153,13 @@ GameObject:
   m_Component:
   - component: {fileID: 4352479990898737329}
   - component: {fileID: 7301037006325073782}
-  - component: {fileID: 140929086219968646}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4352479990898737329
 Transform:
   m_ObjectHideFlags: 0
@@ -198,14 +226,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &140929086219968646
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4975544855566748510}
-  m_Enabled: 1
 --- !u!1 &5659068749830838754
 GameObject:
   m_ObjectHideFlags: 0

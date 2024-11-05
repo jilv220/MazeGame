@@ -1,24 +1,37 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager Instance;
+    private static SoundManager _instance;
+    public static SoundManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<SoundManager>();
+                if (_instance == null)
+                {
+                    GameObject soundManagerObj = new("SoundManager");
+                    _instance = soundManagerObj.AddComponent<SoundManager>();
+                    DontDestroyOnLoad(soundManagerObj);
+                }
+            }
+            return _instance;
+        }
+    }
+
     private AudioSource sfxSrc;
-    public AudioClip deathSound;
-    public AudioClip respawnSound;
-    public AudioClip levelCompleteSound;
+    private readonly string SFXPath = "SFX";
+    private Dictionary<string, AudioClip> audioClipCache = new();
 
     void Awake()
     {
-        if (Instance == null)
+        if (_instance == null)
         {
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
-
-            sfxSrc = gameObject.AddComponent<AudioSource>();
-            sfxSrc.playOnAwake = false;
         }
         else
         {
@@ -26,18 +39,32 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    private void PlayOneShot(AudioClip clip)
+    public void PlayOneShot(string audioClipBasename)
     {
-        if (clip == null)
+        if (!audioClipCache.TryGetValue(audioClipBasename, out AudioClip clip))
         {
-            Debug.LogWarning("AudioClip is not assigned");
-            return;
+            var audioClipPath = $"{SFXPath}/{audioClipBasename}";
+            clip = Resources.Load<AudioClip>(audioClipPath);
+            if (clip == null)
+            {
+                Debug.LogWarning($"Failed to load AudioClip: {audioClipPath}");
+                return;
+            }
+            audioClipCache[audioClipBasename] = clip;
+        }
+
+        if (sfxSrc == null)
+        {
+            sfxSrc = gameObject.AddComponent<AudioSource>();
+            sfxSrc.playOnAwake = false;
         }
 
         sfxSrc.PlayOneShot(clip);
     }
 
-    public void PlayDeathSound() { PlayOneShot(deathSound); }
-    public void PlayRespawnSound() { PlayOneShot(respawnSound); }
-    public void PlayLevelCompleteSound() { PlayOneShot(levelCompleteSound); }
+    public void ClearAudioCache()
+    {
+        audioClipCache.Clear();
+        Resources.UnloadUnusedAssets();
+    }
 }
