@@ -8,10 +8,7 @@ public class Goal : MonoBehaviour
 
     void Start()
     {
-        var currScene = SceneManager.GetActiveScene();
-        var underscoreIdx = currScene.name.IndexOf('_');
-        sceneNum =
-            Convert.ToInt32(currScene.name[(underscoreIdx + 1)..]);
+        sceneNum = LevelManager.GetCurrentLevel();
     }
 
     void OnTriggerEnter(Collider collision)
@@ -21,33 +18,34 @@ public class Goal : MonoBehaviour
             int totalScenes = SceneManager.sceneCountInBuildSettings;
             Debug.Log(totalScenes);
 
-            var nextSceneNum = sceneNum + 1;
+            var nextSceneNum = LevelManager.GetNextLevel() % totalScenes;
             Debug.Log(nextSceneNum);
 
             SoundManager.Instance.PlayOneShot("level_complete");
-
-            // If last scene, go back to the main menu
-            if (nextSceneNum > totalScenes - 1)
-            {
-                SceneManager.LoadScene("Main");
-            }
-            else
-            {
-                SceneManager.LoadScene(nextSceneNum);
-            }
+            SceneManager.LoadScene(nextSceneNum);
 
             // Display Level Preview and hide Game UI
             GUIManager.isLevelPreviewVisible = true;
 
-            var playerGobj = GameObject.Find("Player");
-            var dashHandler = playerGobj.GetComponent<DashHandler>();
-            dashHandler.enabled = false;
-            UIManager.Instance.SetDashUIActive(false);
+            if (DashHandler.Instance != null)
+            {
+                DashHandler.Instance.DisableDashing();
+            }
+            else
+            {
+                Debug.LogError("Dashhandler Instance not found!");
+            }
+
+            if (Player.Instance != null)
+            {
+                Player.Instance.Hide();
+            }
         }
     }
 
     void OnGUI()
     {
+        GUI.matrix = Settings.SetupScaling();
         GUIManager.DisplayLevelPreview(sceneNum);
     }
 }

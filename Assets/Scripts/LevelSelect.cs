@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 public class LevelSelect : MonoBehaviour
 {
     private int currentSceneIdx = 0;
-    private GameObject levelViewCamera;
-    private AsyncOperation currentLoadOpeartion;
 
     // Start is called before the first frame update
     void Start()
@@ -15,34 +13,22 @@ public class LevelSelect : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (currentLoadOpeartion == null || !currentLoadOpeartion.isDone)
-            return;
-
-        currentLoadOpeartion = null;
-        levelViewCamera = GameObject.Find("Level View Camera");
-        if (levelViewCamera == null)
-            Debug.LogError("No level view camera found in the scene!");
-    }
-
     void OnGUI()
     {
+        GUI.matrix = Settings.SetupScaling();
         switch (currentSceneIdx)
         {
             case 0:
                 GUILayout.Label("OBSTACLE COURSE");
                 GUILayout.Label("Select a level to preview it");
+                GUIManager.isLevelPreviewVisible = true;
+
                 for (int i = 1; i < SceneManager.sceneCountInBuildSettings; i++)
                 {
                     if (GUILayout.Button("Level " + i))
                     {
-                        if (currentLoadOpeartion == null)
-                        {
-                            currentLoadOpeartion = SceneManager.LoadSceneAsync(i);
-                            currentSceneIdx = i;
-                        }
+                        SceneManager.LoadScene(i);
+                        currentSceneIdx = i;
                     }
                 }
 

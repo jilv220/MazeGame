@@ -1,16 +1,18 @@
-using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+
     [Header("References")]
     public Transform trans;
     public Transform modelTrans;
     public CharacterController characterController;
+
+    public GameObject playerModel;
     public GameObject cam;
-    private DashHandler dashHandler;
 
     [Header("Movement")]
     public float moveSpeed = 24;
@@ -105,11 +107,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void SetEnabled(bool value)
+    public void SetEnabled(bool value)
     {
         enabled = value;
-        characterController.enabled = value;
-        modelTrans.gameObject.SetActive(value);
     }
 
     public void Die()
@@ -120,18 +120,24 @@ public class Player : MonoBehaviour
         Invoke(nameof(Respawn), respawnWaitTime);
 
         movementVelocity = Vector3.zero;
+
         SetEnabled(false);
-        dashHandler.dashBeginTime = Mathf.NegativeInfinity;
+        characterController.enabled = false;
+        modelTrans.gameObject.SetActive(false);
+
+        DashHandler.Instance.dashBeginTime = Mathf.NegativeInfinity;
         SoundManager.Instance.PlayOneShot("death");
     }
 
     public void Respawn()
     {
-        dead = false;
-        trans.position = spawnPoint;
-        modelTrans.rotation = spawnRotation;
+        ResetAttrs();
+        transform.position = spawnPoint;
 
         SetEnabled(true);
+        characterController.enabled = true;
+        modelTrans.gameObject.SetActive(true);
+
         SoundManager.Instance.PlayOneShot("respawn");
     }
 
@@ -140,12 +146,48 @@ public class Player : MonoBehaviour
         isInvincible = !isInvincible;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Show()
     {
-        spawnPoint = transform.position;
-        spawnRotation = modelTrans.rotation;
-        dashHandler = GetComponent<DashHandler>();
+        playerModel.SetActive(true);
+        cam.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        playerModel.SetActive(false);
+        cam.SetActive(false);
+    }
+
+    public void SetSpawnPoint(int level)
+    {
+        LevelManager.SpawnPoints.TryGetValue(level, out spawnPoint);
+        Debug.Log($"[Player:SetSpawnPoint] spawn point is: {spawnPoint}");
+        transform.position = spawnPoint;
+    }
+
+    public void ResetAttrs()
+    {
+        dead = false;
+        isPaused = false;
+        isInvincible = false;
+        modelTrans.rotation = spawnRotation;
+    }
+
+    // Unity
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            Hide();
+            spawnRotation = modelTrans.rotation;
+            SetEnabled(false);
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -154,10 +196,6 @@ public class Player : MonoBehaviour
         if (!isPaused)
         {
             Movement();
-            if (dashHandler != null)
-            {
-                dashHandler.HandleDash();
-            }
 
             if (Debug.isDebugBuild)
             {
@@ -181,11 +219,12 @@ public class Player : MonoBehaviour
     {
         if (!isPaused) return;
 
-        float boxWidth = Screen.width * .4f;
-        float boxHeight = Screen.height * .4f;
+        GUI.matrix = Settings.SetupScaling();
+        float boxWidth = Settings.referenceWidth * .4f;
+        float boxHeight = Settings.referenceHeight * .4f;
         GUILayout.BeginArea(new Rect(
-            (Screen.width * .5f) - (boxWidth * .5f),
-            (Screen.height * .5f) - (boxHeight * .5f),
+            (Settings.referenceWidth * .5f) - (boxWidth * .5f),
+            (Settings.referenceHeight * .5f) - (boxHeight * .5f),
             boxWidth,
             boxHeight
         ));
@@ -199,6 +238,13 @@ public class Player : MonoBehaviour
         if (GUILayout.Button("RETURN TO MAIN MENU", GUILayout.Height(boxHeight * .5f)))
         {
             Time.timeScale = 1;
+
+            DashHandler.Instance.DisableDashing();
+            // Now that player is a singleton, I need to reset state
+            Hide();
+            ResetAttrs();
+            SetEnabled(false);
+
             SceneManager.LoadScene(0);
         }
 

@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpikeTrap : MonoBehaviour
@@ -55,6 +54,8 @@ public class SpikeTrap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float elapsedTime = Time.time - lastSwitchTime;
+
         switch (state)
         {
             case State.Lowering:
@@ -62,8 +63,11 @@ public class SpikeTrap : MonoBehaviour
                     var newScale
                         = UpdateSpikeScale(SpikeHeight, LoweredSpikeHeight, (Time.time - lastSwitchTime) / lowerTime);
 
-                    // Finished lowering
-                    if (newScale.y == LoweredSpikeHeight)
+                    /*
+                    * Finished lowering 
+                    * Use elapsed time to check instead due to precision issue in WebGL builds
+                    */
+                    if (elapsedTime >= lowerTime)
                     {
                         Invoke(nameof(StartRaising), interval);
                         state = State.Lowered;
@@ -75,10 +79,10 @@ public class SpikeTrap : MonoBehaviour
                 {
 
                     var newScale
-                        = UpdateSpikeScale(LoweredSpikeHeight, SpikeHeight, (Time.time - lastSwitchTime) / lowerTime);
+                        = UpdateSpikeScale(LoweredSpikeHeight, SpikeHeight, (Time.time - lastSwitchTime) / raiseTime);
 
                     // Finished raising
-                    if (newScale.y == SpikeHeight)
+                    if (elapsedTime >= raiseTime)
                     {
                         Invoke(nameof(StartLowering), raiseWaitTime);
                         state = State.Raised;

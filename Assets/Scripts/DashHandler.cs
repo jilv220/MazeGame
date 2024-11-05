@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class DashHandler : MonoBehaviour
 {
+    public static DashHandler Instance { get; private set; }
+
     [Header("Dash Settings")]
     public float dashDistance = 17;
     public float dashTime = .26f;
@@ -23,6 +25,20 @@ public class DashHandler : MonoBehaviour
         get { return Time.time > dashBeginTime + dashTime + dashCooldown; }
     }
 
+    private bool dashEnabled = true;
+
+    public void EnableDashing()
+    {
+        dashEnabled = true;
+        UIManager.Instance.SetDashUIActive(true);
+    }
+
+    public void DisableDashing()
+    {
+        dashEnabled = false;
+        UIManager.Instance.SetDashUIActive(false);
+    }
+
     void UpdateCooldownUI()
     {
         var cooldownEndTime = dashBeginTime + dashTime + dashCooldown;
@@ -42,29 +58,11 @@ public class DashHandler : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        characterController = GetComponent<CharacterController>();
-
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.dashImage.fillAmount = 1f;
-            UIManager.Instance.dashImage.color = UIManager.Instance.activeColor;
-
-            // Save the color
-            overlayColor = UIManager.Instance.cooldownOverlay.color;
-            UIManager.Instance.cooldownOverlay.fillAmount = 0f;
-            UIManager.Instance.cooldownOverlay.color = new Color(0, 0, 0, 0);
-        }
-    }
-
-    void Update()
-    {
-        UpdateCooldownUI();
-    }
-
     public void HandleDash()
     {
+        if (!dashEnabled)
+            return;
+
         if (IsDashing)
         {
             characterController.Move(dashDistance / dashTime * Time.deltaTime * dashDirection);
@@ -93,6 +91,48 @@ public class DashHandler : MonoBehaviour
             dashBeginTime = Time.time;
             player.movementVelocity = dashDirection * player.moveSpeed;
         }
+    }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Start()
+    {
+        characterController = GetComponent<CharacterController>();
+
+        if (UIManager.Instance != null)
+        {
+            if (dashBeginTime == Mathf.NegativeInfinity)
+            {
+                UIManager.Instance.dashImage.fillAmount = 1f;
+                UIManager.Instance.dashImage.color = UIManager.Instance.activeColor;
+
+                // Save the color
+                overlayColor = UIManager.Instance.cooldownOverlay.color;
+                UIManager.Instance.cooldownOverlay.fillAmount = 0f;
+                UIManager.Instance.cooldownOverlay.color = new Color(0, 0, 0, 0);
+            }
+            else
+            {
+                UpdateCooldownUI();
+            }
+        }
+    }
+
+    void Update()
+    {
+        UpdateCooldownUI();
+        HandleDash();
     }
 }
 

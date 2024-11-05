@@ -84,11 +84,13 @@ MonoBehaviour:
   trans: {fileID: 8088749811746460800}
   modelTrans: {fileID: 633100337979485994}
   characterController: {fileID: 8768405023161399557}
+  playerModel: {fileID: 1376252777170777528}
   cam: {fileID: 4975544855566748510}
   moveSpeed: 24
   timeToMaxSpeed: 0.26
   timeToLoseMaxSpeed: 0.2
   reverseMomentumMultiplier: 2.2
+  movementVelocity: {x: 0, y: 0, z: 0}
   respawnWaitTime: 2
 --- !u!143 &8768405023161399557
 CharacterController:
@@ -131,7 +133,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1883033847345058571}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f89cf0952acea4a7c8217c7e217555e6, type: 3}
   m_Name: 
@@ -139,9 +141,6 @@ MonoBehaviour:
   dashDistance: 9
   dashTime: 0.26
   dashCooldown: 1.8
-  dashImage: {fileID: 0}
-  cooldownOverlay: {fileID: 0}
-  activeColor: {r: 1, g: 1, b: 1, a: 1}
   dashBeginTime: -Infinity
 --- !u!1 &4975544855566748510
 GameObject:

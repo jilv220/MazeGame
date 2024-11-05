@@ -3,22 +3,34 @@ using UnityEngine;
 public class GUIManager : MonoBehaviour
 {
     public static bool isLevelPreviewVisible = true;
+
     static void PlayCurrentLevel()
     {
-        var playerGobj = GameObject.Find("Player");
-        if (playerGobj == null)
+        // Enable Player
+        if (Player.Instance)
         {
-            Debug.LogError("Couldn't find player in the level!");
-            return;
+            var currentLevel = LevelManager.GetCurrentLevel();
+            Debug.Log($"GUIManager: current level is: {currentLevel}");
+
+            Player.Instance.ResetAttrs();
+            Player.Instance.SetSpawnPoint(currentLevel);
+            Player.Instance.Show();
+            Player.Instance.SetEnabled(true);
+        }
+        else
+        {
+            Debug.LogError("Player instance not found!");
         }
 
-        var playerScript = playerGobj.GetComponent<Player>();
-        playerScript.enabled = true;
-        playerScript.cam.SetActive(true);
-
-        var dashHandler = playerGobj.GetComponent<DashHandler>();
-        dashHandler.enabled = true;
-        UIManager.Instance.SetDashUIActive(true);
+        // Enable dashing functionality via DashHandler
+        if (DashHandler.Instance != null)
+        {
+            DashHandler.Instance.EnableDashing();
+        }
+        else
+        {
+            Debug.LogError("DashHandler instance not found!");
+        }
     }
 
     public static void ToggleLevelPreviewVisability()
